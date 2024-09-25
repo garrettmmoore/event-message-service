@@ -10,134 +10,37 @@ public class EventHandler_Test
     {
         eventMessageInstances =
         [
-            new EventMessageInstance
-            {
-                TransactionId = "01",
-                Type = EventMessageType.REQUEST,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "01",
-                Type = EventMessageType.RESPONSE,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392155,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "021",
-                Type = EventMessageType.REQUEST,
-                Operation = "Action",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "022",
-                Type = EventMessageType.RESPONSE,
-                Operation = "Action",
-                Timestamp = 1725392155,
-                Success = false
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "031",
-                Type = EventMessageType.REQUEST,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "032",
-                Type = EventMessageType.RESPONSE,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392155,
-                Success = false
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "041",
-                Type = EventMessageType.REQUEST,
-                Operation = "Action",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "041",
-                Type = EventMessageType.RESPONSE,
-                Operation = "Action",
-                Timestamp = 1725392155,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "051",
-                Type = EventMessageType.REQUEST,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "052",
-                Type = EventMessageType.RESPONSE,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392155,
-                Success = false
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "061",
-                Type = EventMessageType.REQUEST,
-                Operation = "Action",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "062",
-                Type = EventMessageType.RESPONSE,
-                Operation = "Action",
-                Timestamp = 1725392155,
-                Success = false
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "071",
-                Type = EventMessageType.REQUEST,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "071",
-                Type = EventMessageType.RESPONSE,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392155,
-                Success = false
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "081",
-                Type = EventMessageType.REQUEST,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392080,
-                Success = true
-            },
-            new EventMessageInstance
-            {
-                TransactionId = "082",
-                Type = EventMessageType.RESPONSE,
-                Operation = "GetDataUsage",
-                Timestamp = 1725392155,
-                Success = false
-            }
+            // Processed
+            new EventMessageInstance { TransactionId = "01", Type = EventMessageType.RESPONSE, Operation = "GetDataUsage", Timestamp = 1725392155, Success = true },
+            new EventMessageInstance { TransactionId = "01", Type = EventMessageType.REQUEST, Operation = "GetDataUsage",Timestamp = 1725392080,Success = true },
+            
+            // Not Processed - 1
+            new EventMessageInstance { TransactionId = "021", Type = EventMessageType.REQUEST, Operation = "Action", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "022", Type = EventMessageType.RESPONSE, Operation = "Action", Timestamp = 1725392155, Success = false },
+            
+            // Not Processed - 2
+            new EventMessageInstance { TransactionId = "031", Type = EventMessageType.REQUEST, Operation = "GetDataUsage", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "032", Type = EventMessageType.RESPONSE, Operation = "GetDataUsage", Timestamp = 1725392155, Success = false },
+            
+            // Processed
+            new EventMessageInstance { TransactionId = "041", Type = EventMessageType.REQUEST, Operation = "Action", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "041", Type = EventMessageType.RESPONSE, Operation = "Action", Timestamp = 1725392155, Success = true },
+            
+            // Not processed - 3
+            new EventMessageInstance { TransactionId = "051", Type = EventMessageType.REQUEST, Operation = "GetDataUsage", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "052", Type = EventMessageType.RESPONSE, Operation = "GetDataUsage", Timestamp = 1725392155, Success = false },
+            
+            // Not processed - 4
+            new EventMessageInstance { TransactionId = "061", Type = EventMessageType.REQUEST, Operation = "Action", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "062", Type = EventMessageType.RESPONSE, Operation = "Action", Timestamp = 1725392155, Success = false },
+            
+            // Processed
+            new EventMessageInstance { TransactionId = "071", Type = EventMessageType.REQUEST, Operation = "GetDataUsage", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "071", Type = EventMessageType.RESPONSE, Operation = "GetDataUsage", Timestamp = 1725392155, Success = false },
+            
+            // Not processed 5
+            new EventMessageInstance { TransactionId = "081", Type = EventMessageType.REQUEST, Operation = "GetDataUsage", Timestamp = 1725392080, Success = true },
+            new EventMessageInstance { TransactionId = "082", Type = EventMessageType.RESPONSE, Operation = "GetDataUsage", Timestamp = 1725392155, Success = false }
         ];
     }
 

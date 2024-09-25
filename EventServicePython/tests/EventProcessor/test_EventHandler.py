@@ -41,7 +41,7 @@ class TestEventHandler(unittest.TestCase):
     def test_get_number_processed_requests_by_operation_name(self):
         self.assertEqual(
             3,
-            self.solution.get_number_processed_requests_by_operation_name(
+            self.solution.get_number_pending_requests_by_operation_name(
                 self.eventMessageInstances,
                 "GetDataUsage"
             )

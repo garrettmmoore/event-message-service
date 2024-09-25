@@ -7,17 +7,16 @@ public class EventHandler
     /// <returns> The total number of pending requests. </returns>
     public int GetNumberPendingRequests(EventMessageInstance[] events)
     {
-        // Initialize a dictionary to store the pending requests
-        Dictionary<string, int> pendingRequests = new();
+        // Use a dictionary to track the state of each transactionId
+        Dictionary<string, int> pendingRequestCounts = new();
 
-        // Iterate through the events and update the pending requests
         foreach (EventMessageInstance currentEvent in events)
         {
-            UpdatePendingRequests(currentEvent, pendingRequests);
+            UpdatePendingRequests(currentEvent, pendingRequestCounts);
         }
 
-        // Return the total count of the remaining pending requests
-        return pendingRequests.Count;
+        // Return the total count of pending requests (only positive request counts remain pending)
+        return pendingRequestCounts.Values.Count(count => count > 0);
     }
 
     /// <summary>
@@ -29,35 +28,45 @@ public class EventHandler
     /// <returns> The total number of pending requests. </returns>
     public int GetNumberPendingRequestsByOperationName(EventMessageInstance[] events, string operationName)
     {
-        Dictionary<string, int> pendingRequests = new();
+        Dictionary<string, int> requestCounts = new();
 
-        // Iterate through the events and update the pending requests
         foreach (EventMessageInstance currentEvent in events)
         {
             // Only proceed if current operation matches given operation name
-            if (currentEvent.Operation != operationName) continue;
-
-            UpdatePendingRequests(currentEvent, pendingRequests);
+            if (currentEvent.Operation == operationName)
+            {
+                UpdatePendingRequests(currentEvent, requestCounts);
+            }
         }
 
-        // Return the total count of the remaining pending requests
-        return pendingRequests.Count;
+        // Return the total count of pending requests (only positive request counts remain pending)
+        return requestCounts.Values.Count(count => count > 0);
     }
 
-    /// <summary> A helper method to refresh the pending requests. </summary>
+    /// <summary> A helper method to update the state of pending requests. </summary>
     /// <param name="currentEvent"> The event message containing the details of the request. </param>
-    /// <param name="pendingRequests"> A map containing the pending requests. </param>
-    private void UpdatePendingRequests(EventMessageInstance currentEvent, Dictionary<string, int> pendingRequests)
+    /// <param name="pendingRequestCounts"> A dictionary containing the count of pending requests. </param>
+    private void UpdatePendingRequests(EventMessageInstance currentEvent, Dictionary<string, int> pendingRequestCounts)
     {
         string transactionId = currentEvent.TransactionId;
-
+        
+        // If Request type, then increase the pending count for a given transactionId
         if (currentEvent.Type == EventMessageType.REQUEST)
         {
-            pendingRequests.TryAdd(transactionId, 0);
+            pendingRequestCounts.TryAdd(transactionId, 0);
+            pendingRequestCounts[transactionId]++;
         }
-        else if (currentEvent.Type == EventMessageType.RESPONSE && pendingRequests.ContainsKey(transactionId))
+        // If Response type, then decrease the pending count for a given transactionId
+        else if (currentEvent.Type == EventMessageType.RESPONSE)
         {
-            pendingRequests.Remove(transactionId);
+            pendingRequestCounts.TryAdd(transactionId, 0);
+            pendingRequestCounts[transactionId]--;
+
+            // If the count becomes 0, we have even pairs of REQUEST-RESPONSE, remove it
+            if (pendingRequestCounts[transactionId] == 0)
+            {
+                pendingRequestCounts.Remove(transactionId);
+            }
         }
     }
 }

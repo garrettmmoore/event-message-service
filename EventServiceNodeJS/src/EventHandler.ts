@@ -7,21 +7,23 @@ export class EventHandler {
      * @returns The total number of pending requests.
      */
     getNumberPendingRequests(events: EventMessageInstance[]): number {
-        // Initialize a hashmap to store the pending requests
-        const pendingRequests = new Map<string, number>();
+        // Use a Map to track the state of each transactionId
+        const requestCounts = new Map<string, number>();
 
-        // Iterate through the events and update the pending requests
-        events.forEach(currentEvent => {
-            this.updatePendingRequests(currentEvent, pendingRequests);
+        for (const currentEvent of events) {
+            this.updatePendingRequests(currentEvent, requestCounts);
+        }
+
+        // Return the total count of pendings (only positive request counts remain pending)
+        let pendingCount = 0;
+        requestCounts.forEach(count => {
+            if (count > 0) pendingCount++;
         });
-
-        // Return the total count of the remaining pending requests
-        return pendingRequests.size;
+        return pendingCount;
     }
 
     /**
-     * A method to find the number of pending requests from a given batch of events
-     * with the given operation name.
+     * A method to find the number of pending requests from a given batch of events with the given operation name.
      * @param events A list of event messages.
      * @param operationName The name of the operation to filter by.
      * @returns The total number of pending requests.
@@ -30,44 +32,60 @@ export class EventHandler {
         events: EventMessageInstance[],
         operationName: string
     ): number {
-        const pendingRequests = new Map<string, number>();
+        const requestCounts = new Map<string, number>();
 
-        // Iterate through the events and update the pending requests
-        events.forEach(currentEvent => {
+        for (const currentEvent of events) {
             // Only proceed if current operation matches given operation name
-            if (currentEvent.Operation != operationName) return;
-            this.updatePendingRequests(currentEvent, pendingRequests);
-        });
+            if (currentEvent.Operation === operationName) {
+                this.updatePendingRequests(currentEvent, requestCounts);
+            }
+        }
 
-        // Return the total count of the remaining pending requests
-        return pendingRequests.size;
+        // Return the total count of pending requests (only positive request counts remain pending)
+        let pendingCount = 0;
+        requestCounts.forEach(count => {
+            if (count > 0) {
+                pendingCount++;
+            }
+        });
+        return pendingCount;
     }
 
     /**
-     * A helper method to refresh the pending requests.
+     * A helper method to update the state of pending requests.
      * @param currentEvent The event message containing the details of the request.
-     * @param pendingRequests A map containing the pending requests.
+     * @param requestCounts A Map containing the count of pending requests.
      */
     private updatePendingRequests(
         currentEvent: EventMessageInstance,
-        pendingRequests: Map<string, number>
-    ) {
+        requestCounts: Map<string, number>
+    ): void {
         const transactionId = currentEvent.TransactionId;
 
-        // If the event is a REQUEST, add the request to the map
-        if (currentEvent.Type == EventMessageType.REQUEST) {
-            if (!pendingRequests.has(transactionId)) {
-                pendingRequests.set(transactionId, 0);
+        // If Request type, then increase the pending count for a given transactionId
+        if (currentEvent.Type === EventMessageType.REQUEST) {
+            if (!requestCounts.has(transactionId)) {
+                requestCounts.set(transactionId, 0);
             }
+            requestCounts.set(
+                transactionId,
+                requestCounts.get(transactionId)! + 1
+            );
         }
-        // Otherwise, if the event is a RESPONSE and a matching transactionId is found
-        // in the map, the request has completed and is no longer pending. Delete the
-        // matching request from the map.
-        else if (
-            currentEvent.Type == EventMessageType.RESPONSE &&
-            pendingRequests.has(transactionId)
-        ) {
-            pendingRequests.delete(transactionId);
+        // If Response type, then decrease the pending count for a given transactionId
+        else if (currentEvent.Type === EventMessageType.RESPONSE) {
+            if (!requestCounts.has(transactionId)) {
+                requestCounts.set(transactionId, 0);
+            }
+            requestCounts.set(
+                transactionId,
+                requestCounts.get(transactionId)! - 1
+            );
+
+            // If the count becomes zero, we have even pairs of REQUEST-RESPONSE, remove it
+            if (requestCounts.get(transactionId) === 0) {
+                requestCounts.delete(transactionId);
+            }
         }
     }
 }
