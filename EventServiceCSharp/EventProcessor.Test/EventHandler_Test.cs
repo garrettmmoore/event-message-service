@@ -144,7 +144,6 @@ public class EventHandler_Test
     [TestMethod]
     public void TestGetNumberPendingRequests()
     {
-        Console.WriteLine("count: " + eventMessageInstances.Length);
         var eventService = new EventHandler();
         int result = eventService.GetNumberPendingRequests(eventMessageInstances);
         Assert.AreEqual(5, result);
